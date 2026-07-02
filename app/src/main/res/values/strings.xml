@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ExpenseFlow</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="expenses">Expenses</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="categories">Categories</string>
+    <string name="monthly_income">Monthly Income</string>
+    <string name="pending">Pending</string>
+    <string name="paid">Paid</string>
+    <string name="balance">Balance</string>
+    <string name="expense_title">Expense Title</string>
+    <string name="expense_amount">Amount</string>
+    <string name="expense_category">Category</string>
+    <string name="expense_description">Description</string>
+    <string name="save_expense">Save Expense</string>
+    <string name="mark_as_paid">Mark as Paid</string>
+    <string name="search_expenses">Search expenses...</string>
+    <string name="no_expenses">No expenses yet</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+</resources>
