@@ -1,183 +1,128 @@
-# ExpenseFlow - Development Guide
+# ExpenseFlow Development Guide
 
-## Architecture
+## Architecture Overview
 
-This project follows MVVM (Model-View-ViewModel) architecture pattern:
+ExpenseFlow follows the MVVM (Model-View-ViewModel) architecture pattern:
 
-### Model Layer
-- **Entity**: Database entity classes (ExpenseEntity, CategoryEntity, IncomeEntity)
-- **Dao**: Data Access Objects for database operations
-- **Database**: Room database configuration
-- **Repository**: Single source of truth for data
-
-### ViewModel Layer
-- Manages UI-related data
-- Handles business logic
-- Observes and exposes data to UI
-
-### View Layer
-- Fragments for UI screens
-- Activities for host containers
-- Adapters for RecyclerView
-- Layout XMLs for UI design
-
-## Database Schema
-
-### Expenses Table
-```sql
-CREATE TABLE expenses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    amount REAL NOT NULL,
-    category TEXT NOT NULL,
-    description TEXT,
-    date INTEGER,
-    isPaid INTEGER DEFAULT 0,
-    createdAt INTEGER,
-    updatedAt INTEGER
-)
+```
+UI Layer (Fragments/Activities)
+         ↓
+    ViewModel (StateFlow)
+         ↓
+    Repository
+         ↓
+    DAO (Data Access Objects)
+         ↓
+    Room Database
 ```
 
-### Categories Table
-```sql
-CREATE TABLE categories (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    icon TEXT,
-    color TEXT,
-    createdAt INTEGER
-)
-```
+## Data Flow
 
-### Income Table
-```sql
-CREATE TABLE income (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    amount REAL NOT NULL,
-    month INTEGER,
-    year INTEGER,
-    createdAt INTEGER,
-    updatedAt INTEGER
-)
-```
+1. **UI Layer**: Fragments and Activities display data
+2. **ViewModel**: Manages UI state using StateFlow and coroutines
+3. **Repository**: Provides data abstraction layer
+4. **DAO**: Room database access layer
+5. **Database**: SQLite database via Room ORM
 
-## Key Classes
+## Adding New Features
 
-### Entities
-- `ExpenseEntity`: Represents a single expense
-- `CategoryEntity`: Represents an expense category
-- `IncomeEntity`: Represents monthly income
-
-### DAOs
-- `ExpenseDao`: CRUD operations for expenses
-- `CategoryDao`: CRUD operations for categories
-- `IncomeDao`: CRUD operations for income
-
-### ViewModels
-- `ExpenseViewModel`: Manages expense data and operations
-- `CategoryViewModel`: Manages category data and operations
-- `DashboardViewModel`: Manages dashboard statistics
-
-### Fragments
-- `DashboardFragment`: Main dashboard with statistics
-- `ExpensesFragment`: List view of all expenses
-- `AddExpenseFragment`: Form to add new expense
-- `CategoriesFragment`: Grid view of categories
-
-## State Management
-
-Using Kotlin Flow and StateFlow for reactive data binding:
-
+### 1. Create Entity (if needed)
 ```kotlin
-// ViewModel
-private val _expenses = MutableStateFlow<List<ExpenseEntity>>(emptyList())
-val expenses: StateFlow<List<ExpenseEntity>> = _expenses.asStateFlow()
+@Entity(tableName = "table_name")
+data class NewEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    // fields
+)
+```
 
-// Fragment
-viewLifecycleOwner.lifecycleScope.launch {
-    viewModel.expenses.collect { expenses ->
-        adapter.submitList(expenses)
+### 2. Create DAO
+```kotlin
+@Dao
+interface NewDao {
+    @Insert
+    suspend fun insert(entity: NewEntity)
+    
+    @Query("SELECT * FROM table_name")
+    fun getAll(): Flow<List<NewEntity>>
+}
+```
+
+### 3. Update Database
+```kotlin
+@Database(
+    entities = [ExistingEntity::class, NewEntity::class],
+    version = 2 // Increment version
+)
+abstract class ExpenseFlowDatabase : RoomDatabase() {
+    abstract fun newDao(): NewDao
+}
+```
+
+### 4. Create ViewModel
+```kotlin
+class NewViewModel(private val repository: ExpenseRepository) : ViewModel() {
+    private val _data = MutableStateFlow<List<NewEntity>>(emptyList())
+    val data: StateFlow<List<NewEntity>> = _data.asStateFlow()
+    
+    init {
+        loadData()
+    }
+    
+    private fun loadData() {
+        viewModelScope.launch {
+            repository.getNewData().collect { items ->
+                _data.value = items
+            }
+        }
     }
 }
 ```
 
-## UI/UX Guidelines
+### 5. Create Fragment/UI
+- Create XML layout in `res/layout/`
+- Create Fragment class with ViewBinding
+- Observe ViewModel data
 
-### Material 3 Design
-- Use Material 3 components (MaterialButton, MaterialCardView, etc.)
-- Follow color system (Primary, Secondary, Tertiary)
-- Maintain consistent spacing and padding
+## Code Style Guidelines
 
-### Glassmorphism
-- Semi-transparent backgrounds with blur effect
-- Subtle shadows and borders
-- Modern, clean aesthetic
-
-### Dark Mode
-- Automatically supported via Material 3
-- Different color palettes for light and dark themes
-- Colors defined in values/colors.xml and values-night/colors.xml
-
-## Code Style
-
-### Naming Conventions
-- Classes: PascalCase (ExpenseViewModel)
-- Functions: camelCase (loadExpenses)
-- Constants: UPPER_CASE (DEFAULT_TIMEOUT)
-- Private fields: prefix with underscore (_binding)
-
-### Kotlin Best Practices
+- Use Kotlin naming conventions (camelCase for variables/functions, PascalCase for classes)
+- Keep functions under 20 lines when possible
 - Use extension functions for common operations
-- Prefer val over var
-- Use data classes for models
-- Use sealed classes for type-safe callbacks
+- Add type hints for better code readability
+- Document public APIs with KDoc
 
 ## Testing
 
 ### Unit Tests
-- Test ViewModel logic
-- Mock Repository
-- Verify StateFlow emissions
+```bash
+./gradlew test
+```
 
 ### Instrumented Tests
-- Test DAO operations
-- Test database migrations
-- Test UI interactions
+```bash
+./gradlew connectedAndroidTest
+```
 
-## Dependencies
+## Performance Tips
 
-See `build.gradle.kts` for complete list:
-- AndroidX Core and AppCompat
-- Material 3
-- Room Database
-- Navigation
-- Coroutines
-- MPAndroidChart
+1. Use `StateFlow` instead of `LiveData` for better performance
+2. Batch database operations with Room transactions
+3. Use `Flow` for reactive data streams
+4. Implement proper pagination for large datasets
+5. Use `debounce` for search queries
 
-## Future Enhancements
+## Debugging
 
-- [ ] Cloud synchronization
-- [ ] Expense import/export
-- [ ] Budget alerts
-- [ ] Monthly reports
-- [ ] Multi-currency support
-- [ ] Recurring expenses
-- [ ] Receipt OCR
-- [ ] Expense sharing
+- Use Android Studio's Logcat for logs
+- Set breakpoints in the debugger
+- Use Database Inspector for Room database inspection
+- Use Layout Inspector for UI debugging
 
-## Troubleshooting
+## Resources
 
-### Database Issues
-- Clear app data if schema changes
-- Check Room migration scripts
-- Verify entity annotations
-
-### UI Issues
-- Ensure ViewBinding is enabled in build.gradle
-- Check layout file names match fragment references
-- Verify navigation graph configuration
-
-### Compilation Issues
-- Run `./gradlew clean build`
-- Invalidate Android Studio cache
-- Update Gradle and dependencies
+- [Android Architecture Guide](https://developer.android.com/topic/architecture)
+- [Room Database Documentation](https://developer.android.com/training/data-storage/room)
+- [Material 3 Design System](https://m3.material.io/)
+- [Jetpack Navigation](https://developer.android.com/guide/navigation)
+- [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)

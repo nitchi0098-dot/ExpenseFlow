@@ -1,45 +1,49 @@
 # Contributing to ExpenseFlow
 
-## Getting Started
+## How to Contribute
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Make your changes
-4. Commit with clear messages: `git commit -am 'Add new feature'`
-5. Push to your branch: `git push origin feature/your-feature`
-6. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Code Review Process
+## Pull Request Process
 
-- All PRs require code review
-- Ensure tests pass
-- Follow code style guidelines
-- Update documentation if needed
+1. Update the README.md with details of changes
+2. Ensure code follows the style guidelines
+3. Ensure all tests pass
+4. Request review from maintainers
 
-## Reporting Issues
+## Development Setup
 
-- Use GitHub issues
-- Provide clear description
-- Include steps to reproduce
-- Add relevant logs or screenshots
+1. Clone the repository
+2. Open in Android Studio
+3. Sync Gradle files
+4. Build the project
 
-## Feature Requests
+## Commit Guidelines
 
-- Check existing issues first
-- Clearly describe the feature
-- Explain the use case
-- Provide mockups if applicable
+- Use present tense ("Add feature" not "Added feature")
+- Use imperative mood ("Move cursor to..." not "Moves cursor to...")
+- Limit first line to 72 characters or less
+- Reference issues and pull requests liberally after the first line
 
-## Code Style
+## Reporting Bugs
 
-- Follow Kotlin conventions
-- Use meaningful variable names
-- Keep functions small and focused
-- Add comments for complex logic
+When reporting bugs, please include:
 
-## Commit Messages
+- Device and Android version
+- Steps to reproduce
+- Expected behavior
+- Actual behavior
+- Relevant logs
 
-- Use present tense: "Add feature" not "Added feature"
-- Be descriptive but concise
-- Reference issues: "Fix #123"
-- Group related changes in single commit
+## Suggesting Enhancements
+
+Include:
+
+- Use case
+- Proposed solution
+- Alternative solutions
+- Additional context
