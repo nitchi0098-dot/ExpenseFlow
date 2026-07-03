@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="dark_mode_entries">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System Default</item>
+    </array>
+    <array name="dark_mode_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>system</item>
+    </array>
+
+    <array name="default_categories">
+        <item>Food</item>
+        <item>Transportation</item>
+        <item>Entertainment</item>
+        <item>Shopping</item>
+        <item>Utilities</item>
+        <item>Health</item>
+        <item>Education</item>
+        <item>Other</item>
+    </array>
+</resources>
